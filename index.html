@@ -49,7 +49,7 @@
 <body>
     <h1>Here is someone truly special!<br>Look Closely..</h1>
     <div id="mirror">
-        <img src="HCI_logo.png" alt="HCI Logo" style="position: absolute; top: 15px; right: 15px; width: 160px; height: 80px; z-index: 10;">
+        <img src="HCI_logo.png" alt="HCI Logo" style="position: absolute; top: 15px; right: 15px; width: 160px; height: 80px; z-index: 10;"> 
         <video id="video" autoplay></video>
     </div>
     <div id="quote">
@@ -87,7 +87,7 @@
             const logoImage = new Image();
             // --- FIX 1: Add crossOrigin property to prevent canvas tainting ---
             logoImage.crossOrigin = "anonymous";
-            //logoImage.src = 'HCI_logo.png'; // Make sure this file exists in same folder
+            logoImage.src = 'HCI_logo.png'; // Make sure this file exists in same folder
 
             logoImage.onload = () => {
                 // Draw the logo at top right of the canvas
@@ -130,7 +130,7 @@
                 try {
                     // Auto-download the image
                     const link = document.createElement('a');
-                    link.href = canvas.toDataURL('image/png'); // Use correct MIME type
+                    link.href = canvas.toDataURL('i '); // Use correct MIME type
                     link.download = 'doctors-day-thank-you.png';
                     link.click();
                 } catch (e) {
