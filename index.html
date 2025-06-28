@@ -44,6 +44,28 @@
             font-size: 16px;
             margin: 10px;
         }
+        
+        /* --- NEW MEDIA QUERY FOR MOBILE --- */
+       @media screen and (min-width: 480px) {
+            /* On smaller screens, make the mirror and quote responsive */
+            #mirror {
+                width: 800px ; 
+                height: 700px; 
+            }
+
+            #quote {
+                width: 95vw;
+                font-size: 24px; /* Make the quote responsive as well */
+            }
+
+            button {
+                font-size: 24px;
+                /* Original padding was 10px top/bottom, 20px left/right.
+                   This updates top padding to 20px while keeping the rest. */
+                padding: 20px 20px ;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -110,27 +132,27 @@
                 ctx.font = 'italic 18px Arial';
                 ctx.textAlign = 'center';
                 const maxLineWidth = mirror.offsetWidth - 40;
-                const words = quote.textContent.split(' ');
+                const words = quote.textContent.trim().split(' ');
                 let line = '';
                 let yPos = mirror.offsetHeight + 40;
                 for (let i = 0; i < words.length; i++) {
                     const testLine = line + words[i] + ' ';
                     const metrics = ctx.measureText(testLine);
                     if (metrics.width > maxLineWidth && i > 0) {
-                        ctx.fillText(line, canvas.width / 2, yPos);
+                        ctx.fillText(line.trim(), canvas.width / 2, yPos);
                         yPos += 25;
                         line = words[i] + ' ';
                     } else {
                         line = testLine;
                     }
                 }
-                ctx.fillText(line, canvas.width / 2, yPos);
+                ctx.fillText(line.trim(), canvas.width / 2, yPos);
 
                 // --- FIX 2: Add try-catch for error handling and use correct MIME type ---
                 try {
                     // Auto-download the image
                     const link = document.createElement('a');
-                    link.href = canvas.toDataURL('i '); // Use correct MIME type
+                    link.href = canvas.toDataURL('image/png'); // Use correct MIME type
                     link.download = 'doctors-day-thank-you.png';
                     link.click();
                 } catch (e) {
