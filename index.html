@@ -59,7 +59,6 @@
             width: 94vw;
             max-width: 400px;
             font-size: 12px;  
-            padding: 8px;
         }
         button {
             font-size: 18px;
@@ -69,165 +68,141 @@
     
     /* Very small screens */
     @media only screen and (max-width: 600px) {
-         body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #f0f8ff;
-        padding: 0px;
-    }
+        body {
+            padding: 0px;
+        }
         #mirror {
             height: 50vh;
         }
         h1 {
             font-size: 24px;
         }
-         #quote {
+        #quote {
             width: 94vw;
             max-width: 400px;
             font-size: 12px;  
-            padding: 8px;
         }
     }
-     @media only screen and (max-width: 420px) {
-         #quote {
+    @media only screen and (max-width: 420px) {
+        #quote {
             width: 94vw;
             max-width: 400px;
             font-size: 8px;  
         }
     }
-
-</style>
+    </style>
 </head>
 <body>
-    <h1>"A Tribute to an unsung hero"</h1>
+    <h1>"A Tribute to an Unsung Hero"</h1>
     <div id="mirror">
         <img src="HCI_logo.png" alt="HCI Logo" style="position: absolute; top: 15px; right: 15px; width: 120px; height: auto; z-index: 10;">
         <video id="video" autoplay playsinline></video> 
     </div>
     <div id="quote">
-        "You heal with compassion and care.Thank you for your dedication"<br>Happy Doctor's Day!
+        <p>You heal with compassion and care. Thank you for your dedication</p>
+        <p>Happy Doctor's Day!</p>
     </div>
     <button id="capture">Capture & Download</button>
 
-    <script>
-        const video = document.getElementById('video');
-        const captureBtn = document.getElementById('capture');
+   <script>
+const video = document.getElementById('video');
+const captureBtn = document.getElementById('capture');
 
-        // Access the camera
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-            })
-            .catch(err => {
-                console.error("Error accessing camera: ", err);
-                alert("Could not access the camera. Please enable permissions.");
-            });
+// Access the camera
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+        video.srcObject = stream;
+    })
+    .catch(err => {
+        console.error("Error accessing camera: ", err);
+        alert("Could not access the camera. Please enable permissions.");
+    });
 
-        captureBtn.addEventListener('click', () => {
-            const mirror = document.getElementById('mirror');
-            const quote = document.getElementById('quote');
-            const logo = mirror.querySelector('img'); // Get the logo element
+captureBtn.addEventListener('click', () => {
+    const mirror = document.getElementById('mirror');
+    const quote = document.getElementById('quote');
+    const logo = mirror.querySelector('img');
 
-            const canvas = document.createElement('canvas');
-            canvas.width = mirror.offsetWidth;
-            const quoteHeight = quote.offsetHeight;
-            canvas.height = mirror.offsetHeight + quoteHeight + 40; // Base height + quote + padding
-            const ctx = canvas.getContext('2d');
+    const canvas = document.createElement('canvas');
+    canvas.width = mirror.offsetWidth;
+    const quoteHeight = quote.offsetHeight;
+    canvas.height = mirror.offsetHeight + quoteHeight + 50;
+    const ctx = canvas.getContext('2d');
 
-            // Draw the video frame
-            ctx.drawImage(video, 0, 0, mirror.offsetWidth, mirror.offsetHeight);
+    // Draw video frame
+    ctx.drawImage(video, 0, 0, mirror.offsetWidth, mirror.offsetHeight);
 
-            // Load the logo dynamically
-            const logoImage = new Image();
-            logoImage.crossOrigin = "anonymous";
-            logoImage.src = logo.src;
+    const drawTextLines = () => {
+        // White background for text
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, mirror.offsetHeight, canvas.width, quoteHeight + 50);
 
-            logoImage.onload = () => {
-                // Draw the logo at top right of the canvas
-                // We use the logo's display style for position and size
-                const logoWidth = logo.width;
-                const logoHeight = logo.height;
-                const logoRight = parseInt(logo.style.right, 10);
-                const logoTop = parseInt(logo.style.top, 10);
-                ctx.drawImage(
-                    logoImage,
-                    canvas.width - logoWidth - logoRight,
-                    logoTop,
-                    logoWidth,
-                    logoHeight
-                );
+        // Text styling
+        ctx.fillStyle = '#333333';
+        ctx.font = 'italic 18px Arial';
+        ctx.textAlign = 'center';
 
-                // Draw the white background for the quote
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, mirror.offsetHeight, canvas.width, quoteHeight + 40);
+        const lines = [
+            "You heal with compassion and care. Thank you for your dedication",
+            "Happy Doctor's Day!"
+        ];
 
-                // Draw the quote text
-                ctx.fillStyle = '#333333';
-                ctx.font = 'italic 18px Arial';
-                ctx.textAlign = 'center';
-                const maxLineWidth = mirror.offsetWidth - 40;
-                const words = quote.textContent.trim().split(' ');
-                let line = '';
-                // Adjust starting Y position for the text
-                let yPos = mirror.offsetHeight + 35;
+        let yPos = mirror.offsetHeight + 50;
+        const maxWidth = canvas.width - 40; // padding left/right
 
-                for (let i = 0; i < words.length; i++) {
-                    const testLine = line + words[i] + ' ';
-                    const metrics = ctx.measureText(testLine);
-                    if (metrics.width > maxLineWidth && i > 0) {
-                        ctx.fillText(line.trim(), canvas.width / 2, yPos);
-                        line = words[i] + ' ';
-                        yPos += 25; // Line height
-                    } else {
-                        line = testLine;
-                    }
+        lines.forEach(line => {
+            // If line is too long, split it
+            const words = line.split(' ');
+            let currentLine = '';
+            for (let i = 0; i < words.length; i++) {
+                const testLine = currentLine + words[i] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && i > 0) {
+                    ctx.fillText(currentLine.trim(), canvas.width / 2, yPos);
+                    currentLine = words[i] + ' ';
+                    yPos += 25;
+                } else {
+                    currentLine = testLine;
                 }
-                ctx.fillText(line.trim(), canvas.width / 2, yPos);
-
-                // Auto-download the image
-                try {
-                    const link = document.createElement('a');
-                    link.href = canvas.toDataURL('image/png');
-                    link.download = 'doctors-day-thank-you.png';
-                    link.click();
-                } catch (e) {
-                    console.error("Canvas toDataURL error:", e);
-                    alert("Capture Failed: Could not save the image. Please try on a different browser or check security settings.");
-                }
-            };
-
-            logoImage.onerror = () => {
-                // In case the logo fails, we can still proceed without it
-                console.error('Logo image could not be loaded.');
-                 // Redraw everything except the logo
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, mirror.offsetHeight, canvas.width, quoteHeight + 40);
-                ctx.fillStyle = '#333333';
-                ctx.font = 'italic 18px Arial';
-                ctx.textAlign = 'center';
-                const maxLineWidth = mirror.offsetWidth - 40;
-                const words = quote.textContent.trim().split(' ');
-                let line = '';
-                let yPos = mirror.offsetHeight + 35;
-                for (let i = 0; i < words.length; i++) {
-                    const testLine = line + words[i] + ' ';
-                    const metrics = ctx.measureText(testLine);
-                    if (metrics.width > maxLineWidth && i > 0) {
-                        ctx.fillText(line.trim(), canvas.width / 2, yPos);
-                        line = words[i] + ' ';
-                        yPos += 25;
-                    } else {
-                        line = testLine;
-                    }
-                }
-                ctx.fillText(line.trim(), canvas.width / 2, yPos);
-                // Now try downloading without the logo
-                 const link = document.createElement('a');
-                 link.href = canvas.toDataURL('image/png');
-                 link.download = 'doctors-day-thank-you.png';
-                 link.click();
-            };
+            }
+            ctx.fillText(currentLine.trim(), canvas.width / 2, yPos);
+            yPos += 30;
         });
-    </script>
+    };
+
+    const logoImage = new Image();
+    logoImage.crossOrigin = "anonymous";
+    logoImage.src = logo.src;
+
+    logoImage.onload = () => {
+        const logoWidth = logo.width;
+        const logoHeight = logo.height;
+        const logoRight = parseInt(logo.style.right, 10);
+        const logoTop = parseInt(logo.style.top, 10);
+        ctx.drawImage(
+            logoImage,
+            canvas.width - logoWidth - logoRight,
+            logoTop,
+            logoWidth,
+            logoHeight
+        );
+        drawTextLines();
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'doctors-day-thank-you.png';
+        link.click();
+    };
+
+    logoImage.onerror = () => {
+        console.error('Logo image could not be loaded.');
+        drawTextLines();
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'doctors-day-thank-you.png';
+        link.click();
+    };
+});
+</script>
+
 </body>
 </html>
